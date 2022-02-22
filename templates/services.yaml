@@ -3,7 +3,16 @@ kind: Service
 metadata:
   labels:
     {{- include "netmaker.labels" . | nindent 4 }}
+    {{- if .Values.service.uiLabels }}
+    {{- toYaml .Values.service.uiLabels | nindent 4 }}
+    {{- end }}
+
   name: '{{ include "netmaker.fullname" . }}-ui'
+  {{- if .Values.service.uiAnnotations }}
+  annotations:
+    {{- toYaml .Values.service.uiAnnotations | nindent 4 }}
+  {{- end }}
+
 spec:
   ports:
   - port: {{ .Values.service.uiPort }}
@@ -59,13 +68,14 @@ spec:
   externalTrafficPolicy: Local
   type: NodePort
   ports:
-  {{ $count := (add .Values.wireguard.networkLimit 1 | int) }}
+  {{- $count := (add .Values.wireguard.networkLimit 1 | int) }}
   {{- range untilStep 1 $count 1 }}
-  - port: {{ add 31820 . }}
-    nodePort: {{ add 31820 . }}
+  {{- $port := (add $.Values.wireguard.baseUdpPort . | int) }}
+  - port: {{ $port }}
+    nodePort: {{ $port }}
     protocol: UDP
-    targetPort: {{ add 31820 . }}
-    name: wg-iface-{{ add 31820 . }}
+    targetPort: {{ $port }}
+    name: wg-iface-{{ $port }}
   {{- end }}
   selector:
     app: '{{ include "netmaker.fullname" . }}'

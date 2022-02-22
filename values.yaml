@@ -46,10 +46,16 @@ service:
   type: ClusterIP
   # -- port for API service
   restPort: 8081
+  restLabels: {}
+  restAnnotation: {}
   # -- port for GRPC service
   grpcPort: 443
+  grpcLabels: {}
+  grpcAnnotations: {}
   # -- port for UI service
   uiPort: 80
+  uiLabels: {}
+  uiAnnotations: {}
 
 ingress:
   # -- attempts to configure ingress if true
@@ -98,6 +104,8 @@ wireguard:
   kernel: false
   # -- max number of networks that Netmaker will support if running with WireGuard enabled
   networkLimit: 10
+  # -- base UDP port to start with
+  baseUdpPort: 31820
 
 dns:
   # -- whether or not to run with DNS (CoreDNS)
